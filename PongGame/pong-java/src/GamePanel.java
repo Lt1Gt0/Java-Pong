@@ -10,12 +10,13 @@ public class GamePanel extends JPanel implements ActionListener{
 	static final int SCREEN_WIDTH = 600;
 	static final int SCREEN_HEIGHT = 600;
 	static final int DELAY = 75;
-	static final int PLAYER_SPEED = 50;
-	static final int BALL_SPEED = 50;
+	static final int PLAYER_SPEED = 10;
+	static final int BALL_SPEED = 10;
 	static final int BALL_DIAMETER = 15;
 	static final int PLAYER_WIDTH = 10;
 	static final int PLAYER_HEIGHT = 100;
-	char ballDirectionX, ballDirectionY;
+	char ballDirectionX = ' ';
+	char ballDirectionY = ' ';
 	char playerOneDirection, playerTwoDirection;
 	int playerOneY, playerTwoY;
 	int ballX, ballY;
@@ -53,7 +54,7 @@ public class GamePanel extends JPanel implements ActionListener{
 			g.setFont(new Font("TimesRoman", Font.BOLD, 25));
 			FontMetrics metrics = getFontMetrics(g.getFont());
 			g.drawString("Score: "+scoreOne, metrics.stringWidth("Score: "+scoreOne), g.getFont().getSize());
-			g.drawString("Score: "+scoreTwo, (SCREEN_WIDTH - metrics.stringWidth("Score: "+scoreTwo))/2, g.getFont().getSize());
+			g.drawString("Score: "+scoreTwo, (SCREEN_WIDTH - metrics.stringWidth("Score: "+scoreTwo)*2), g.getFont().getSize());
 		
 			g.setColor(Color.white);
 			g.fillOval((SCREEN_WIDTH/2)-(BALL_DIAMETER/2), (SCREEN_HEIGHT/2)-(BALL_DIAMETER/2), BALL_DIAMETER, BALL_DIAMETER);
@@ -65,16 +66,72 @@ public class GamePanel extends JPanel implements ActionListener{
 		}
 	}
 	public void resetBoard() {
+		//Set the players position
+		playerOneDirection = ' ';
+		playerTwoDirection = ' ';
+		playerOneY = SCREEN_HEIGHT/2 - PLAYER_HEIGHT/2;
+		playerTwoY = playerOneY;
+		
+		//Set the ball's position to the middle of the playing area
+		ballDirectionX = ' ';
+		ballDirectionY = ' ';
 		ballX = (SCREEN_WIDTH/2)-(BALL_DIAMETER/2);
 		ballY = (SCREEN_HEIGHT/2)-(BALL_DIAMETER/2);
 		
+		//Determines the way the ball will move when the round starts
+		if(random.nextInt(1) == 0) {
+			ballDirectionX = 'L';
+		} else {
+			ballDirectionX = 'R';
+		}
 		
+		if(random.nextInt(1) == 0) {
+			ballDirectionY = 'U';
+		} else {
+			ballDirectionY = 'D';
+		}
 	}
 	public void moveBall() {
-		
+		if(ballDirectionX != ' ' && ballDirectionY != ' ') {
+			switch(ballDirectionX) {
+			case 'L':
+				ballX -= BALL_SPEED;
+				break;
+			case 'R':
+				ballX += BALL_SPEED;
+				break;
+			}
+			switch(ballDirectionY) {
+			case 'U':
+				ballY -= BALL_SPEED;
+				break;
+			case 'D':
+				ballY += BALL_SPEED;
+				break;
+			}
+		}
 	}
 	public void move() {
+		switch(playerOneDirection) {
+		case 'U':
+			playerOneY -= PLAYER_SPEED;
+			break;
+		case 'D':
+			playerOneY += PLAYER_SPEED;
+			break;
+		}
 		
+		switch(playerTwoDirection) {
+		case 'U':
+			playerTwoY -= PLAYER_SPEED;
+			break;
+		case 'D':
+			playerTwoY += PLAYER_SPEED;
+			break;
+		}
+		
+		playerOneDirection = ' ';
+		playerTwoDirection = ' ';
 	}
 	public void checkBall() {
 		
@@ -88,12 +145,39 @@ public class GamePanel extends JPanel implements ActionListener{
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+		if(running) {
+			move();
+			moveBall();
+			checkCollisions();
+			checkBall();
+		}
+		repaint();
 		
 	}
 	
 	public class MyKeyAdapter extends KeyAdapter{
 		
+		@Override
+		public void keyPressed(KeyEvent e) {
+			switch(e.getKeyCode()) {
+			case KeyEvent.VK_UP:
+				if(playerTwoDirection != 'D')
+					playerTwoDirection = 'U';
+				break;
+			case KeyEvent.VK_DOWN:
+				if(playerTwoDirection != 'U')
+					playerTwoDirection = 'D';
+				break;
+			case KeyEvent.VK_W:
+				if(playerOneDirection != 'D')
+					playerOneDirection = 'U';
+				break;
+			case KeyEvent.VK_S:
+				if(playerOneDirection != 'U')
+					playerOneDirection = 'D';
+				break;
+			}
+		}
 	}
 
 }
