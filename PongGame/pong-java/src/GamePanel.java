@@ -10,14 +10,14 @@ public class GamePanel extends JPanel implements ActionListener{
 	static final int SCREEN_WIDTH = 600;
 	static final int SCREEN_HEIGHT = 600;
 	static final int DELAY = 75;
-	static final int PLAYER_SPEED = 10;
-	static final int BALL_SPEED = 10;
+	static final int PLAYER_SPEED = 15;
+	static final int BALL_SPEED = 5;
 	static final int BALL_DIAMETER = 15;
 	static final int PLAYER_WIDTH = 10;
 	static final int PLAYER_HEIGHT = 100;
-	char ballDirectionX = ' ';
-	char ballDirectionY = ' ';
-	char playerOneDirection, playerTwoDirection;
+	//char ballDirectionX = ' ';
+	//char ballDirectionY = ' ';
+	boolean ballMovingUp, ballMovingLeft;
 	boolean wIsDown, sIsDown, upIsDown, downIsDown;
 	int playerOneY, playerTwoY;
 	int ballX, ballY;
@@ -56,9 +56,9 @@ public class GamePanel extends JPanel implements ActionListener{
 			FontMetrics metrics = getFontMetrics(g.getFont());
 			g.drawString("Score: "+scoreOne, metrics.stringWidth("Score: "+scoreOne), g.getFont().getSize());
 			g.drawString("Score: "+scoreTwo, (SCREEN_WIDTH - metrics.stringWidth("Score: "+scoreTwo)*2), g.getFont().getSize());
-		
+			
 			g.setColor(Color.white);
-			g.fillOval((SCREEN_WIDTH/2)-(BALL_DIAMETER/2), (SCREEN_HEIGHT/2)-(BALL_DIAMETER/2), BALL_DIAMETER, BALL_DIAMETER);
+			g.fillOval(ballX, ballY, BALL_DIAMETER, BALL_DIAMETER);
 			g.fillRect(25, playerOneY, PLAYER_WIDTH, PLAYER_HEIGHT);
 			g.fillRect(SCREEN_WIDTH-25-PLAYER_WIDTH, playerTwoY, PLAYER_WIDTH, PLAYER_HEIGHT);
 		}
@@ -67,53 +67,44 @@ public class GamePanel extends JPanel implements ActionListener{
 		}
 	}
 	public void resetBoard() {
-		//Set the players position
-		playerOneDirection = ' ';
-		playerTwoDirection = ' ';
 		playerOneY = SCREEN_HEIGHT/2 - PLAYER_HEIGHT/2;
 		playerTwoY = playerOneY;
 		
 		//Set the ball's position to the middle of the playing area
-		ballDirectionX = ' ';
-		ballDirectionY = ' ';
 		ballX = (SCREEN_WIDTH/2)-(BALL_DIAMETER/2);
 		ballY = (SCREEN_HEIGHT/2)-(BALL_DIAMETER/2);
 		
 		//Determines the way the ball will move when the round starts
-		if(random.nextInt(1) == 0) {
-			ballDirectionX = 'L';
-		} else {
-			ballDirectionX = 'R';
+		if(random.nextBoolean()) {
+			ballMovingUp = true;
+		}
+		else {
+			ballMovingUp = false;
 		}
 		
-		if(random.nextInt(1) == 0) {
-			ballDirectionY = 'U';
-		} else {
-			ballDirectionY = 'D';
+		if(random.nextBoolean()) {
+			ballMovingLeft = true;
+		}
+		else {
+			ballMovingLeft = false;
 		}
 	}
 	public void moveBall() {
-		if(ballDirectionX != ' ' && ballDirectionY != ' ') {
-			switch(ballDirectionX) {
-			case 'L':
-				ballX -= BALL_SPEED;
-				break;
-			case 'R':
-				ballX += BALL_SPEED;
-				break;
-			}
-			switch(ballDirectionY) {
-			case 'U':
-				ballY -= BALL_SPEED;
-				break;
-			case 'D':
-				ballY += BALL_SPEED;
-				break;
-			}
+		if(ballMovingUp) {
+			ballY -= BALL_SPEED;
+		}
+		else {
+			ballY += BALL_SPEED;
+		}
+		
+		if(ballMovingLeft) {
+			ballX -= BALL_SPEED;
+		}
+		else {
+			ballX += BALL_SPEED;
 		}
 	}
 	public void move() {
-		
 		if(wIsDown)
 			playerOneY -= PLAYER_SPEED;
 		if(sIsDown)
@@ -125,10 +116,41 @@ public class GamePanel extends JPanel implements ActionListener{
 			playerTwoY += PLAYER_SPEED;
 	}
 	public void checkBall() {
+		if(ballX <= 0) {
+			scoreTwo++;
+			resetBoard();
+		}
+		if(ballX >= SCREEN_WIDTH) {
+			scoreOne++;
+			resetBoard();
+		}
 		
 	}
 	public void checkCollisions() {
+		if(ballY <= 50) {
+			ballMovingUp = false;
+		}
+		if(ballY >= SCREEN_HEIGHT) {
+			ballMovingUp = true;
+		}
 		
+		if(playerOneY < 50)
+			playerOneY = 50;
+		if(playerOneY+PLAYER_HEIGHT > SCREEN_HEIGHT)
+			playerOneY = SCREEN_HEIGHT-PLAYER_HEIGHT;
+		if(playerTwoY < 50)
+			playerTwoY = 50;
+		if(playerTwoY+PLAYER_HEIGHT > SCREEN_HEIGHT)
+			playerTwoY = SCREEN_HEIGHT-PLAYER_HEIGHT;
+		
+		if(ballX <= 25+PLAYER_WIDTH &&
+			 (ballY >= playerOneY && ballY <= playerOneY + PLAYER_HEIGHT)) {
+			ballMovingLeft = false;
+		}
+		if(ballX >= SCREEN_WIDTH-25-PLAYER_WIDTH*2 &&
+				 (ballY >= playerTwoY && ballY <= playerTwoY + PLAYER_HEIGHT)) {
+				ballMovingLeft = true;
+		}
 	}
 	public void gameOver(Graphics g) {
 		
