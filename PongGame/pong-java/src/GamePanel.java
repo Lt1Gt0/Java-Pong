@@ -18,6 +18,7 @@ public class GamePanel extends JPanel implements ActionListener{
 	char ballDirectionX = ' ';
 	char ballDirectionY = ' ';
 	char playerOneDirection, playerTwoDirection;
+	boolean wIsDown, sIsDown, upIsDown, downIsDown;
 	int playerOneY, playerTwoY;
 	int ballX, ballY;
 	int scoreOne, scoreTwo;
@@ -112,26 +113,16 @@ public class GamePanel extends JPanel implements ActionListener{
 		}
 	}
 	public void move() {
-		switch(playerOneDirection) {
-		case 'U':
+		
+		if(wIsDown)
 			playerOneY -= PLAYER_SPEED;
-			break;
-		case 'D':
+		if(sIsDown)
 			playerOneY += PLAYER_SPEED;
-			break;
-		}
 		
-		switch(playerTwoDirection) {
-		case 'U':
+		if(upIsDown)
 			playerTwoY -= PLAYER_SPEED;
-			break;
-		case 'D':
+		if(downIsDown)
 			playerTwoY += PLAYER_SPEED;
-			break;
-		}
-		
-		playerOneDirection = ' ';
-		playerTwoDirection = ' ';
 	}
 	public void checkBall() {
 		
@@ -161,23 +152,36 @@ public class GamePanel extends JPanel implements ActionListener{
 		public void keyPressed(KeyEvent e) {
 			switch(e.getKeyCode()) {
 			case KeyEvent.VK_UP:
-				if(playerTwoDirection != 'D')
-					playerTwoDirection = 'U';
+				upIsDown = true;
 				break;
 			case KeyEvent.VK_DOWN:
-				if(playerTwoDirection != 'U')
-					playerTwoDirection = 'D';
+				downIsDown = true;
 				break;
 			case KeyEvent.VK_W:
-				if(playerOneDirection != 'D')
-					playerOneDirection = 'U';
+				wIsDown = true;
 				break;
 			case KeyEvent.VK_S:
-				if(playerOneDirection != 'U')
-					playerOneDirection = 'D';
+				sIsDown = true;
 				break;
 			}
 		}
+		
+		@Override
+		public void keyReleased(KeyEvent e) {
+			switch(e.getKeyCode()) {
+			case KeyEvent.VK_UP:
+				upIsDown = false;
+				break;
+			case KeyEvent.VK_DOWN:
+				downIsDown = false;
+				break;
+			case KeyEvent.VK_W:
+				wIsDown = false;
+				break;
+			case KeyEvent.VK_S:
+				sIsDown = false;
+				break;
+			}
+			}
+		}
 	}
-
-}
