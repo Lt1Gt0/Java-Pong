@@ -15,13 +15,13 @@ public class GamePanel extends JPanel implements ActionListener{
 	static final int BALL_DIAMETER = 15;
 	static final int PLAYER_WIDTH = 10;
 	static final int PLAYER_HEIGHT = 100;
-	//char ballDirectionX = ' ';
-	//char ballDirectionY = ' ';
+	static final int WINNING_SCORE = 1;
 	boolean ballMovingUp, ballMovingLeft;
 	boolean wIsDown, sIsDown, upIsDown, downIsDown;
 	int playerOneY, playerTwoY;
 	int ballX, ballY;
-	int scoreOne, scoreTwo;
+	int scoreOne = 0;
+	int scoreTwo = 0;
 	boolean running = false;
 	Timer timer;
 	Random random;
@@ -125,6 +125,13 @@ public class GamePanel extends JPanel implements ActionListener{
 			resetBoard();
 		}
 		
+		if(scoreOne == WINNING_SCORE || scoreTwo == WINNING_SCORE) {
+			running = false;
+		}
+//		else {
+//			resetBoard();
+//		}
+		
 	}
 	public void checkCollisions() {
 		if(ballY <= 50) {
@@ -153,7 +160,18 @@ public class GamePanel extends JPanel implements ActionListener{
 		}
 	}
 	public void gameOver(Graphics g) {
-		
+		String winner;
+		if(scoreOne == WINNING_SCORE) {
+			winner = "Player 1";
+		}
+		else {
+			winner = "Player 2";
+		}
+		String winText = winner + " wins!";
+		g.setColor(Color.white);
+		g.setFont(new Font("TimesRoman", Font.BOLD, 50));
+		FontMetrics metrics = getFontMetrics(g.getFont());
+		g.drawString(winText, (SCREEN_WIDTH - metrics.stringWidth(winText)) / 2, SCREEN_HEIGHT/2);
 	}
 	
 	@Override
