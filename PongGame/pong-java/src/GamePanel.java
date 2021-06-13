@@ -11,11 +11,11 @@ public class GamePanel extends JPanel implements ActionListener{
 	static final int SCREEN_HEIGHT = 600;
 	static final int DELAY = 75;
 	static final int PLAYER_SPEED = 15;
-	static final int BALL_SPEED = 5;
-	static final int BALL_DIAMETER = 15;
+	static final int BALL_DIAMETER = 20;
 	static final int PLAYER_WIDTH = 10;
 	static final int PLAYER_HEIGHT = 100;
 	static final int WINNING_SCORE = 1;
+	int BALL_SPEED = 5;
 	boolean ballMovingUp, ballMovingLeft;
 	boolean wIsDown, sIsDown, upIsDown, downIsDown;
 	int playerOneY, playerTwoY;
@@ -73,6 +73,7 @@ public class GamePanel extends JPanel implements ActionListener{
 		//Set the ball's position to the middle of the playing area
 		ballX = (SCREEN_WIDTH/2)-(BALL_DIAMETER/2);
 		ballY = (SCREEN_HEIGHT/2)-(BALL_DIAMETER/2);
+		BALL_SPEED = 5;
 		
 		//Determines the way the ball will move when the round starts
 		if(random.nextBoolean()) {
@@ -128,16 +129,12 @@ public class GamePanel extends JPanel implements ActionListener{
 		if(scoreOne == WINNING_SCORE || scoreTwo == WINNING_SCORE) {
 			running = false;
 		}
-//		else {
-//			resetBoard();
-//		}
-		
 	}
 	public void checkCollisions() {
 		if(ballY <= 50) {
 			ballMovingUp = false;
 		}
-		if(ballY >= SCREEN_HEIGHT) {
+		if(ballY + BALL_DIAMETER >= SCREEN_HEIGHT) {
 			ballMovingUp = true;
 		}
 		
@@ -151,12 +148,14 @@ public class GamePanel extends JPanel implements ActionListener{
 			playerTwoY = SCREEN_HEIGHT-PLAYER_HEIGHT;
 		
 		if(ballX <= 25+PLAYER_WIDTH &&
-			 (ballY >= playerOneY && ballY <= playerOneY + PLAYER_HEIGHT)) {
+			 (ballY >= playerOneY && ballY+BALL_DIAMETER <= playerOneY + PLAYER_HEIGHT)) {
 			ballMovingLeft = false;
+			//BALL_SPEED++;
 		}
-		if(ballX >= SCREEN_WIDTH-25-PLAYER_WIDTH*2 &&
-				 (ballY >= playerTwoY && ballY <= playerTwoY + PLAYER_HEIGHT)) {
+		if(ballX+BALL_DIAMETER >= SCREEN_WIDTH-25-PLAYER_WIDTH &&
+				 (ballY >= playerTwoY && ballY+BALL_DIAMETER <= playerTwoY + PLAYER_HEIGHT)) {
 				ballMovingLeft = true;
+			//BALL_SPEED++;
 		}
 	}
 	public void gameOver(Graphics g) {
